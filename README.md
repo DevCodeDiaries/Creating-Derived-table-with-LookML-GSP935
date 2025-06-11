@@ -193,7 +193,7 @@ You’ve successfully added the derived views and updated the model for the **GS
 👩‍💻 Maintained by: **DevCode Diaries-**  
 📢 Want more lab guides?  
 ⭐ Star this repo  
-📬 DM for suggestions or contributions
+
 ### 📺 Stay Connected  
 **Don't forget to like, share & subscribe!**  
 Thanks for watching and stay connected 🙂  

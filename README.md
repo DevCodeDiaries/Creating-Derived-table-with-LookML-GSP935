@@ -1,4 +1,4 @@
-# 🧠 Creating Derived Tables in LookML(GSP935)
+# 🧠 Creating Derived Tables in LookML (GSP935)
 
 This project demonstrates how to create **derived views using LookML** in Looker. You'll also learn to work with `order_details`, `order_details_summary`, and update your `model.lkml` accordingly.
 
@@ -15,8 +15,9 @@ This guide is for **educational purposes only**. It is created to help learners 
 
 ---
 
-### 🔧 1. Turn ON Development Mode  
+### 🔧 1. Turn ON Development Mode
 Click the **toggle button** in Looker to enter development mode.
+![400387338-1a2d8b5f-1a0d-4659-b846-5b56e679a1a9](https://github.com/user-attachments/assets/7bf44c85-6099-4358-8dc0-541c79369f35)
 
 ---
 
@@ -24,9 +25,7 @@ Click the **toggle button** in Looker to enter development mode.
 
 ---
 
-### 🧾 3. Create a View File: `order_details`
-
-Replace default code with:
+### 🧾 3. Create a View File: `order_details.view.lkml`
 
 ```lookml
 view: order_details {
@@ -72,17 +71,131 @@ view: order_details {
     fields: [order_id, user_id, order_item_count, order_revenue]
   }
 }
+
+```
+
 ---
 
+### ✅ 4. Create View File – `order_details_summary.view.lkml`
+
+```lookml
+# If necessary, uncomment the line below to include explore_source.
+# include: "training_ecommerce.model.lkml"
+
+view: add_a_unique_name_1718592811 {
+  derived_table: {
+    explore_source: order_items {
+      column: order_id {}
+      column: user_id {}
+      column: order_count {}
+      column: total_revenue {}
+    }
+  }
+  dimension: order_id {
+    description: ""
+    type: number
+  }
+  dimension: user_id {
+    description: ""
+    type: number
+  }
+  dimension: order_count {
+    description: ""
+    type: number
+  }
+  dimension: total_revenue {
+    description: ""
+    value_format: "$#,##0.00"
+    type: number
+  }
+}
+
+```
 
 ---
-## 🎉 You're All Set!
-You’ve successfully added the derived view and updated the model for the GSP935 LookML Lab. Great job! 💪
 
-👩‍💻 Maintained by: DevCode Diaries
-📢 Want more lab guides?
-⭐ Star this repo
+### ✅ 5. Update `training_ecommerce.model.lkml`
+
+```lookml
+connection: "bigquery_public_data_looker"
+
+# include all the views
+include: "/views/*.view"
+include: "/z_tests/*.lkml"
+include: "/**/*.dashboard"
+
+datagroup: training_ecommerce_default_datagroup {
+  # sql_trigger: SELECT MAX(id) FROM etl_log;;
+  max_cache_age: "1 hour"
+}
+
+persist_with: training_ecommerce_default_datagroup
+
+label: "E-Commerce Training"
+
+explore: order_items {
+  join: order_details {
+    type: left_outer
+    sql_on: ${order_items.order_id} = ${order_details.order_id};;
+    relationship: many_to_one
+  }
+  join: users {
+    type: left_outer
+    sql_on: ${order_items.user_id} = ${users.id} ;;
+    relationship: many_to_one
+  }
+
+  join: inventory_items {
+    type: left_outer
+    sql_on: ${order_items.inventory_item_id} = ${inventory_items.id} ;;
+    relationship: many_to_one
+  }
+
+  join: products {
+    type: left_outer
+    sql_on: ${inventory_items.product_id} = ${products.id} ;;
+    relationship: many_to_one
+  }
+
+  join: distribution_centers {
+    type: left_outer
+    sql_on: ${products.distribution_center_id} = ${distribution_centers.id} ;;
+    relationship: many_to_one
+  }
+}
+
+explore: events {
+  join: event_session_facts {
+    type: left_outer
+    sql_on: ${events.session_id} = ${event_session_facts.session_id} ;;
+    relationship: many_to_one
+  }
+  join: event_session_funnel {
+    type: left_outer
+    sql_on: ${events.session_id} = ${event_session_funnel.session_id} ;;
+    relationship: many_to_one
+  }
+  join: users {
+    type: left_outer
+    sql_on: ${events.user_id} = ${users.id} ;;
+    relationship: many_to_one
+  }
+}
+
+```
+
+---
+
+### 🎉 You're All Set!
+
+You’ve successfully added the derived views and updated the model for the **GSP935 LookML Lab**. Great job! 💪
+
+👩‍💻 Maintained by: **DevCode Diaries-**  
+📢 Want more lab guides?  
+⭐ Star this repo  
 📬 DM for suggestions or contributions
+### 📺 Stay Connected  
+**Don't forget to like, share & subscribe!**  
+Thanks for watching and stay connected 🙂  
 
-
-
+🔗 [📌 Subscribe on YouTube](http://www.youtube.com/@DevCode6508))  
